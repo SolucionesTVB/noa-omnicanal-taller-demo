@@ -1,0 +1,21 @@
+name: send-wa-outbox-cron
+
+on:
+  schedule:
+    - cron: "*/2 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Supabase Edge Function
+        run: |
+          set -e
+          curl -sS -X POST \
+            -H "Authorization: Bearer $ANON_KEY" \
+            -H "apikey: $ANON_KEY" \
+            "$SUPABASE_FUNCTION_URL" | python3 -m json.tool
+        env:
+          SUPABASE_FUNCTION_URL: ${{ secrets.SUPABASE_FUNCTION_URL }}
+          ANON_KEY: ${{ secrets.ANON_KEY }}
